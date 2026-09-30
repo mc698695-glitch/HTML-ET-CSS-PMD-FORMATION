@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulaire</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <header>
+        <h1>Formulaire d'inscription</h1>
+        <p>Veuillez remplir les informations ci-dessous</p>
+    </header>
+
+    <main>
+        <form>
+
+            <label for="nom">Nom :</label>
+            <input type="text" id="nom" name="nom" placeholder="Entrez votre nom">
+
+            <label for="prenom">Prénom :</label>
+            <input type="text" id="prenom" name="prenom" placeholder="Entrez votre prénom">
+
+            <label for="email">E-mail :</label>
+            <input type="email" id="email" name="email" placeholder="exemple@gmail.com">
+
+            <label for="telephone">Téléphone :</label>
+            <input type="tel" id="telephone" name="telephone" placeholder="77 000 00 00">
+
+            <label for="date">Date de naissance :</label>
+            <input type="date" id="date" name="date">
+
+            <label for="sexe">Sexe :</label>
+            <select id="sexe" name="sexe">
+                <option value="">-- Choisir --</option>
+                <option value="homme">Homme</option>
+                <option value="femme">Femme</option>
+            </select>
+
+            <label for="message">Commentaire :</label>
+            <textarea id="message" name="message" rows="5"
+                placeholder="Écrivez votre commentaire"></textarea>
+
+            <div class="boutons">
+                <button type="submit">Envoyer</button>
+                <button type="reset">Annuler</button>
+            </div>
+
+        </form>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 - Mon formulaire</p>
+    </footer>
+
+</body>
+</html>
