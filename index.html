@@ -4,51 +4,69 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Formulaire</title>
-    <link rel="stylesheet" href="style.css">
 </head>
+<style>
+.grid{
+    /*background-color: rgb(226, 210, 230);*/
+height: 200px;
+  display: flex;
+  justify-content: space-between;
+}
+.grid .item1{
+    width: 100%;
+    height: 200px;
+  display: flex;
+  justify-content: space-between;
+  background-color: rgb(0, 166, 33);    
+}
+.grid .item2{
+    display: flex;
+    flex-direction:row ;
+    height: 200px;
+    background-color: rgb(225, 255, 0);
+}
+.grid .item3{
+    width: 100px;
+    height: 100px;
+    background-color: rgb(195, 10, 10);
+}
+.grid .item2 .item01{
+    display: flex;
+    flex-direction:row ;
+    width: 200px;
+    height: 200px;
+    background-color: rgb(0, 166, 33);
+}
+.grid .item2 .item02{
+    width: 200px;
+    height: 200px;
+    background-color: yellow;
+}
+.grid .item2 .item03{
+    flex-direction:row ;
+    width: 200px;
+    height: 200px;
+    background-color: red;
+}
 
+</style>
 <body>
 
     <header>
-        <h1>Formulaire d'inscription</h1>
-        <p>Veuillez remplir les informations ci-dessous</p>
+        <h1> Les positions </h1> 
     </header>
 
     <main>
-        <form>
-
-            <label for="nom">Nom :</label>
-            <input type="text" id="nom" name="nom" placeholder="Entrez votre nom">
-
-            <label for="prenom">Prénom :</label>
-            <input type="text" id="prenom" name="prenom" placeholder="Entrez votre prénom">
-
-            <label for="email">E-mail :</label>
-            <input type="email" id="email" name="email" placeholder="exemple@gmail.com">
-
-            <label for="telephone">Téléphone :</label>
-            <input type="tel" id="telephone" name="telephone" placeholder="77 000 00 00">
-
-            <label for="date">Date de naissance :</label>
-            <input type="date" id="date" name="date">
-
-            <label for="sexe">Sexe :</label>
-            <select id="sexe" name="sexe">
-                <option value="">-- Choisir --</option>
-                <option value="homme">Homme</option>
-                <option value="femme">Femme</option>
-            </select>
-
-            <label for="message">Commentaire :</label>
-            <textarea id="message" name="message" rows="5"
-                placeholder="Écrivez votre commentaire"></textarea>
-
-            <div class="boutons">
-                <button type="submit">Envoyer</button>
-                <button type="reset">Annuler</button>
+       <div class="grid">
+            <div class="item1"></div>
+            <div class="item2">
+                <div class="item01"></div>
+                <div class="item02"></div>
+                <div class="item03"></div>
             </div>
+       </div>
 
-        </form>
+
     </main>
 
     <footer>
