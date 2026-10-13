@@ -1,10 +1,32 @@
 <?php
-if(!empty($_POST["prenom"]) && !empty($_POST["nom"]) && !empty($_POST["email"])){
-    echo $prenom = $_POST['prenom'];
-    echo $nom = $_POST['nom'];
-    echo $email = $_POST['email'];
+$errors="";
+?>
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulaire</title>
+</head>
+
+<body>
+    <!--EN-TETE DE LA COMMENTAIRE---->
+    <header>
+       <h1>MOHAMED</h1>
+    </header>
+    <!--CONTENU DE LA PAGE-->
+    <main>
+        <p>Les champs avec une * sont obligatoires.</p>
+      <form action="" method="post"> 
+        <div id="form_user_errors">
+          <?php echo $errors;
+          if(!empty($_POST["prenom"]) && !empty($_POST["nom"]) && !empty($_POST["email"])){
+     $prenom = $_POST['prenom'];
+     $nom = $_POST['nom'];
+     $email = $_POST['email'];
     if ($prenom === "" || $nom === "" || $email === "") {
-        echo "Tous les champs sont obligatoires.";
+        $errors = "Tous les champs sont obligatoires.";
     } elseif (
         strlen($prenom) > 200 ||
         strlen($nom) > 200 ||
@@ -21,28 +43,9 @@ if(!empty($_POST["prenom"]) && !empty($_POST["nom"]) && !empty($_POST["email"]))
         echo "Email : " .
             htmlspecialchars($email, ENT_QUOTES, "UTF-8") . "<br>";
     }
-}
-
-?>
-
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Formulaire</title>
-</head>
-
-<body>
-    <!--EN-TETE DE LA COMMENTAIRE---->
-    <header>
-       <h1>MOHAMED</h1>
-       <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Dolorem porro deleniti tenetur libero officiis ipsum assumenda reiciendis laudantium nisi repudiandae tempora nemo ut sunt beatae optio accusantium labore, vel voluptate!</p>
-    </header>
-    <!--CONTENU DE LA PAGE-->
-    <main>
-        <p>Les champs avec une * sont obligatoires.</p>
-      <form action="" method="post">
+} 
+          ?>
+        </div>
         <div>
             <label for="">Prénom *</label> 
              <input required placeholder="Entrez votre prénom "
@@ -61,7 +64,7 @@ if(!empty($_POST["prenom"]) && !empty($_POST["nom"]) && !empty($_POST["email"]))
         <div>
             <label for="">Email *</label>
             <input required placeholder="Entrez votre email"
-             maxlength="10"
+             maxlength="20"
              autocomplete="email"
             type="email" name="email">
         </div>
