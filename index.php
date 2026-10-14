@@ -1,5 +1,28 @@
 <?php
 $errors="";
+if(!empty($_POST["prenom"]) && !empty($_POST["nom"]) && !empty($_POST["email"])){
+     $prenom = $_POST['prenom'];
+     $nom = $_POST['nom'];
+     $email = $_POST['email'];
+    if ($prenom === "" || $nom === "" || $email === "") {
+        $errors = "Tous les champs sont obligatoires.";
+    } elseif (
+        strlen($prenom) > 200 ||
+        strlen($nom) > 200 ||
+        strlen($email) > 254
+    ) {
+        echo "La longueur d'un champ est invalide.";
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        echo "L'adresse email est invalide.";
+    } /*else {
+        echo "Prénom : " .
+            htmlspecialchars($prenom, ENT_QUOTES, "UTF-8") . "<br>";
+        echo "Nom : " .
+            htmlspecialchars($nom, ENT_QUOTES, "UTF-8") . "<br>";
+        echo "Email : " .
+            htmlspecialchars($email, ENT_QUOTES, "UTF-8") . "<br>";
+    }*/
+} 
 ?>
 
 <!DOCTYPE html>
@@ -20,31 +43,7 @@ $errors="";
         <p>Les champs avec une * sont obligatoires.</p>
       <form action="" method="post"> 
         <div id="form_user_errors">
-          <?php echo $errors;
-          if(!empty($_POST["prenom"]) && !empty($_POST["nom"]) && !empty($_POST["email"])){
-     $prenom = $_POST['prenom'];
-     $nom = $_POST['nom'];
-     $email = $_POST['email'];
-    if ($prenom === "" || $nom === "" || $email === "") {
-        $errors = "Tous les champs sont obligatoires.";
-    } elseif (
-        strlen($prenom) > 200 ||
-        strlen($nom) > 200 ||
-        strlen($email) > 254
-    ) {
-        echo "La longueur d'un champ est invalide.";
-    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        echo "L'adresse email est invalide.";
-    } else {
-        echo "Prénom : " .
-            htmlspecialchars($prenom, ENT_QUOTES, "UTF-8") . "<br>";
-        echo "Nom : " .
-            htmlspecialchars($nom, ENT_QUOTES, "UTF-8") . "<br>";
-        echo "Email : " .
-            htmlspecialchars($email, ENT_QUOTES, "UTF-8") . "<br>";
-    }
-} 
-          ?>
+          <?php echo $errors;?>
         </div>
         <div>
             <label for="">Prénom *</label> 
@@ -72,6 +71,12 @@ $errors="";
         <button type="submit">Envoyer</button>
         
       </form>
+      // Affichage des resulats en bas 
+      <p><?php echo $errors; ?></p>
+
+    <p>Prénom : <?php echo $prenom; ?></p>
+    <p>Nom : <?php echo $nom; ?></p>
+    <p>Email : <?php echo $email; ?></p>
     </main>
 
     <!--PIED DE LA PAGE-->
