@@ -85,7 +85,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         </div>
 
         <button type="submit">Envoyer</button>
-        <button type="reset">Effacer</button>
+        
 
     </form>
 
