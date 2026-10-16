@@ -6,9 +6,9 @@ $email = "";
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
-    $nom = trim($_POST["nom"] ?? "");
-    $prenom = trim($_POST["prenom"] ?? "");
-    $email = trim($_POST["email"] ?? "");
+    $nom = trim($_POST["nom"] );
+    $prenom = trim($_POST["prenom"] );
+    $email = trim($_POST["email"] );
 
     if ($nom === "" || $prenom === "" || $email === "") {
         $erreur = "Tous les champs sont obligatoires.";
@@ -40,18 +40,30 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 <?php endif; ?>
 
 <form method="POST" action="">
-    <label>Nom :</label>
-    <input type="text" name="nom" required>
-    <br><br>
 
-    <label>Prénom :</label>
-    <input type="text" name="prenom" required>
-    <br><br>
-
-    <label>Email :</label>
-    <input type="email" name="email" required>
-    <br><br>
-
+     <label for="">Prénom *</label>
+         <div> 
+             <input required placeholder="Entrez votre prénom "
+             minlength="2"
+             maxlength="10"
+             autocomplete="given-name"
+              type="text" name="prenom">  
+        </div>
+        <div>
+            <label for="">Nom *</label>
+             <input required placeholder="Entrez votre nom" 
+             maxlength="10"
+             autocomplete="family name"
+              type="text" name="nom">
+        </div>
+        <div>
+            <label for="">Email *</label>
+            <input required placeholder="Entrez votre email"
+             maxlength="20"
+             autocomplete="email"
+            type="email" name="email">
+        </div>
+       
     <button type="submit">Envoyer</button>
 </form>
 
