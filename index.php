@@ -12,12 +12,11 @@ if (empty($_SESSION['csrf'])) {
     $_SESSION['csrf'] = bin2hex(random_bytes(32));
 }
 
-// Échappement pour l'affichage (protection XSS)
+// Supprime les espaces inutiles et protège l'affichage contre les attaques XSS
 function e(string $s): string
 {
-    return htmlspecialchars($s, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+    return htmlspecialchars(trim($s), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 }
-
 // Validation d'un nom / prénom : lettres (accents inclus), espaces, - et ' uniquement. Aucun chiffre.
 function validerNom(string $valeur, string $label, array &$errors, string $cle): void
 {
@@ -34,7 +33,8 @@ function validerNom(string $valeur, string $label, array &$errors, string $cle):
 $errors = [];
 $old = ['prenom' => '', 'nom' => '', 'email' => ''];
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+if ($_SERVER['REQUEST_METHOD'] === 'POST'
+    && ($_POST['form_id'] ?? '') === 'inscription') {
     // Vérification CSRF
     $token = $_POST['csrf'] ?? '';
     if (!is_string($token) || !hash_equals($_SESSION['csrf'], $token)) {
@@ -78,10 +78,7 @@ $saved = $_SESSION['saved'] ?? null;
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Formulaire d'inscription</title>
-    <style>
-        .erreur { color: #c00; margin: 2px 0 8px; }
-        label { display: block; margin-top: 10px; }
-    </style>
+    
 </head>
 <body>
     <h1>Formulaire d'inscription</h1>
@@ -117,6 +114,8 @@ $saved = $_SESSION['saved'] ?? null;
 
         <br><br>
         <button type="submit">Envoyer</button>
+        <button type="submit">Effacer</button>
     </form>
 </body>
 </html>
+
