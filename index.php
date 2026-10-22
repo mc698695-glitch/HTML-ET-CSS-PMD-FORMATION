@@ -5,7 +5,7 @@ session_start();
 header('X-Frame-Options: DENY');
 header('X-Content-Type-Options: nosniff');
 header("Content-Security-Policy: default-src 'self'; style-src 'self' 'unsafe-inline'");
-// Fonction pour supprimer les espaces et protéger l'affichage
+// Fonction de sécurisation des valeurs
 function securite(string $valeur): string
 {
     // Supprimer les espaces au début et à la fin
@@ -21,12 +21,15 @@ $prenom = "";
 $email = "";
 $erreur = "";
 $enregistre = false;
-// Traitement du formulaire
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Récupération des valeurs envoyées
-    $nom = trim($_POST['nom'] ?? '');
-    $prenom = trim($_POST['prenom'] ?? '');
-    $email = trim($_POST['email'] ?? '');
+// Traitement du formulaire d'inscription
+if (
+    $_SERVER['REQUEST_METHOD'] === 'POST'
+    && isset($_POST['form_inscription'])
+) {
+    // Récupération des valeurs saisies
+    $nom = securite($_POST['nom'] ?? '');
+    $prenom = securite($_POST['prenom'] ?? '');
+    $email = securite($_POST['email'] ?? '');
     // Vérification du nom
     if ($nom === '' || !preg_match("/^[\p{L} '’-]{2,50}$/u", $nom)) {
         $erreur = "Veuillez saisir un nom valide.";
@@ -56,11 +59,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <h1>Formulaire d'inscription</h1>
     <!-- Affichage du message d'erreur -->
     <?php if ($erreur !== ''): ?>
-        <p style="color:red;">
+        <p style="color: red;">
             <?= securite($erreur) ?>
         </p>
     <?php endif; ?>
-    <!-- Affichage des informations si elles sont valides -->
+    <!-- Affichage des informations validées -->
     <?php if ($enregistre): ?>
         <h2>Informations saisies</h2>
         <p>Nom : <?= securite($nom) ?></p>
@@ -101,7 +104,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             value="<?= securite($email) ?>"
         >
         <br><br>
-        <button type="submit">Envoyer</button>
+        <!-- Identification unique du formulaire -->
+        <button
+            type="submit"
+            name="form_inscription"
+            value="1"
+        >
+            Envoyer
+        </button>
     </form>
 </body>
 </html>
