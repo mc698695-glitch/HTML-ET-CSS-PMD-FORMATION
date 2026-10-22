@@ -5,7 +5,7 @@ session_start();
 header('X-Frame-Options: DENY');
 header('X-Content-Type-Options: nosniff');
 header("Content-Security-Policy: default-src 'self'; style-src 'self' 'unsafe-inline'");
-// Fonction de sécurisation des valeurs
+// Fonction pour supprimer les espaces et sécuriser l'affichage
 function securite(string $valeur): string
 {
     // Supprimer les espaces au début et à la fin
@@ -21,6 +21,7 @@ $prenom = "";
 $email = "";
 $erreur = "";
 $enregistre = false;
+$motDePasseHache = "";
 // Traitement du formulaire d'inscription
 if (
     $_SERVER['REQUEST_METHOD'] === 'POST'
@@ -30,6 +31,7 @@ if (
     $nom = securite($_POST['nom'] ?? '');
     $prenom = securite($_POST['prenom'] ?? '');
     $email = securite($_POST['email'] ?? '');
+    $motDePasse = $_POST['mot_de_passe'] ?? '';
     // Vérification du nom
     if ($nom === '' || !preg_match("/^[\p{L} '’-]{2,50}$/u", $nom)) {
         $erreur = "Veuillez saisir un nom valide.";
@@ -42,8 +44,17 @@ if (
     elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $erreur = "Veuillez saisir une adresse email valide.";
     }
+    // Vérification du mot de passe
+    elseif (strlen($motDePasse) < 12) {
+        $erreur = "Le mot de passe doit contenir au moins 12 caractères.";
+    }
     // Si toutes les valeurs sont valides
     else {
+        // Hacher le mot de passe
+        $motDePasseHache = password_hash(
+            $motDePasse,
+            PASSWORD_DEFAULT
+        );
         $enregistre = true;
     }
 }
@@ -65,10 +76,11 @@ if (
     <?php endif; ?>
     <!-- Affichage des informations validées -->
     <?php if ($enregistre): ?>
-        <h2>Informations saisies</h2>
-        <p>Nom : <?= securite($nom) ?></p>
-        <p>Prénom : <?= securite($prenom) ?></p>
-        <p>Email : <?= securite($email) ?></p>
+        <h2>Inscription validée</h2>
+        <p>Nom : <?= $nom ?></p>
+        <p>Prénom : <?= $prenom ?></p>
+        <p>Email : <?= $email ?></p>
+        <p>Le mot de passe a été haché avec succès.</p>
     <?php endif; ?>
     <!-- Formulaire d'inscription -->
     <form method="post" action="">
@@ -80,7 +92,7 @@ if (
             minlength="2"
             maxlength="50"
             required
-            value="<?= securite($nom) ?>"
+            value="<?= $nom ?>"
         >
         <br><br>
         <label for="prenom">Prénom *</label>
@@ -91,7 +103,7 @@ if (
             minlength="2"
             maxlength="50"
             required
-            value="<?= securite($prenom) ?>"
+            value="<?= $prenom ?>"
         >
         <br><br>
         <label for="email">Email *</label>
@@ -101,10 +113,20 @@ if (
             name="email"
             maxlength="254"
             required
-            value="<?= securite($email) ?>"
+            value="<?= $email ?>"
         >
         <br><br>
-        <!-- Identification unique du formulaire -->
+        <label for="mot_de_passe">Mot de passe *</label>
+        <input
+            type="password"
+            id="mot_de_passe"
+            name="mot_de_passe"
+            minlength="6"
+            maxlength="72"
+            required
+        >
+        <br><br>
+        <!-- Identification du formulaire -->
         <button
             type="submit"
             name="form_inscription"
