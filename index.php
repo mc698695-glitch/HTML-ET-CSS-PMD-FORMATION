@@ -1,152 +1,118 @@
 <?php
-// Connexion à la base de données
-$host = "localhost";
-$base = "Gestion_Contacts";
-$utilisateur = "root";
-$mot_de_passe_db = "";
+require_once "config.php";
 
-try {
-    $connexion = new PDO(
-        "mysql:host=$host;dbname=$base;charset=utf8mb4",
-        $utilisateur,
-        $mot_de_passe_db
-    );
-
-    // Activer les erreurs PDO
-    $connexion->setAttribute(
-        PDO::ATTR_ERRMODE,
-        PDO::ERRMODE_EXCEPTION
-    );
-} catch (PDOException $e) {
-    die("Erreur de connexion à la base de données.");
-}
-
-// Initialiser les variables
-$nom = "";
-$prenom = "";
+// Initialisation des variables
 $email = "";
-$message = "";
+$erreur = "";
 
-// Vérifier l'envoi du formulaire
+// Vérifie si le formulaire a été envoyé
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
-    // Récupérer et nettoyer les valeurs
-    $nom = trim($_POST["nom"] ?? "");
-    $prenom = trim($_POST["prenom"] ?? "");
+    // Vérifie le jeton de sécurité CSRF
+    verifierCsrf();
+
+    // Récupère les données du formulaire
     $email = trim($_POST["email"] ?? "");
     $mot_de_passe = $_POST["mot_de_passe"] ?? "";
 
-    // Vérifier les champs obligatoires
+    // Vérifie que les données reçues sont des chaînes de caractères
     if (
-        $nom === "" ||
-        $prenom === "" ||
+        !is_string($email) ||
+        !is_string($mot_de_passe) ||
         $email === "" ||
-        $mot_de_passe === ""
+        $mot_de_passe === "" ||
+        strlen($email) > 255 ||
+        !filter_var($email, FILTER_VALIDATE_EMAIL)
     ) {
-        $message = "Veuillez remplir tous les champs.";
-    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $message = "Veuillez saisir une adresse email valide.";
-    } elseif (strlen($mot_de_passe) < 8) {
-        $message = "Le mot de passe doit contenir au moins 8 caractères.";
+        $erreur = "E-mail ou mot de passe incorrect.";
     } else {
-        // Hacher le mot de passe avant de l'enregistrer
-        $mot_de_passe_hache = password_hash(
-            $mot_de_passe,
-            PASSWORD_DEFAULT
+
+        // Recherche l'utilisateur avec son adresse e-mail
+        $requete = $pdo->prepare(
+            "SELECT id, nom, prenom, email, mot_de_passe
+             FROM utilisateurs
+             WHERE email = ?"
         );
 
-        try {
-            // Préparer la requête d'insertion
-            $requete = $connexion->prepare(
-                "INSERT INTO utilisateurs
-                (nom, prenom, email, mot_de_passe)
-                VALUES (:nom, :prenom, :email, :mot_de_passe)"
-            );
+        $requete->execute([$email]);
+        $utilisateur = $requete->fetch(PDO::FETCH_ASSOC);
 
-            // Associer les valeurs aux paramètres
-            $requete->execute([
-                ":nom" => $nom,
-                ":prenom" => $prenom,
-                ":email" => $email,
-                ":mot_de_passe" => $mot_de_passe_hache
-            ]);
+        // Vérifie le mot de passe
+        if (
+            $utilisateur &&
+            password_verify(
+                $mot_de_passe,
+                $utilisateur["mot_de_passe"]
+            )
+        ) {
+            // Renouvelle l'identifiant de session
+            session_regenerate_id(true);
 
-            $message = "Utilisateur enregistré avec succès.";
+            // Enregistre les informations de l'utilisateur
+            $_SESSION["utilisateur_id"] = (int) $utilisateur["id"];
+            $_SESSION["utilisateur_nom"] = $utilisateur["prenom"];
 
-            // Vider les champs après l'enregistrement
-            $nom = "";
-            $prenom = "";
-            $email = "";
+            // Renouvelle le jeton CSRF
+            $_SESSION["csrf_token"] = bin2hex(random_bytes(32));
 
-        } catch (PDOException $e) {
-            // Gérer le cas où l'email existe déjà
-            if ($e->getCode() === "23000") {
-                $message = "Cette adresse email est déjà utilisée.";
-            } else {
-                $message = "Une erreur est survenue lors de l'enregistrement.";
-            }
+            // Redirige vers la page des contacts
+            header("Location: contacts.php");
+            exit;
+        } else {
+            $erreur = "E-mail ou mot de passe incorrect.";
         }
     }
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Inscription</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Connexion</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <h1>Créer un compte</h1>
+<main class="conteneur">
+    <h1>Connexion</h1>
 
-    <p>
-        <?= htmlspecialchars($message, ENT_QUOTES, "UTF-8") ?>
-    </p>
+    <?php if ($erreur !== ""): ?>
+        <p class="erreur"><?= e($erreur) ?></p>
+    <?php endif; ?>
 
-    <form action="" method="post">
-        <label for="nom">Nom :</label>
+    <form method="post" action="">
         <input
-            type="text"
-            id="nom"
-            name="nom"
-            value="<?= htmlspecialchars($nom, ENT_QUOTES, "UTF-8") ?>"
-            required
+            type="hidden"
+            name="csrf_token"
+            value="<?= e($_SESSION["csrf_token"] ?? "") ?>"
         >
-        <br><br>
 
-        <label for="prenom">Prénom :</label>
-        <input
-            type="text"
-            id="prenom"
-            name="prenom"
-            value="<?= htmlspecialchars($prenom, ENT_QUOTES, "UTF-8") ?>"
-            required
-        >
-        <br><br>
-
-        <label for="email">Email :</label>
+        <label for="email">Adresse e-mail</label>
         <input
             type="email"
             id="email"
             name="email"
-            value="<?= htmlspecialchars($email, ENT_QUOTES, "UTF-8") ?>"
+            maxlength="255"
+            value="<?= e($email) ?>"
             required
+            autocomplete="email"
         >
-        <br><br>
 
-        <label for="mot_de_passe">Mot de passe :</label>
+        <label for="mot_de_passe">Mot de passe</label>
         <input
             type="password"
             id="mot_de_passe"
             name="mot_de_passe"
-            minlength="8"
             required
+            autocomplete="current-password"
         >
-        <br><br>
 
-        <button type="submit">S'inscrire</button>
+        <button type="submit">Se connecter</button>
     </form>
+
+    <p><a href="inscription.php">Créer un compte</a></p>
+</main>
 
 </body>
 </html>

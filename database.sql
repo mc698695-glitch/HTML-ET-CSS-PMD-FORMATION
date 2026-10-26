@@ -1,0 +1,32 @@
+CREATE DATABASE IF NOT EXISTS Gestion_Contacts
+CHARACTER SET utf8mb4
+COLLATE utf8mb4_unicode_ci;
+
+USE Gestion_Contacts;
+
+CREATE TABLE utilisateurs (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    nom VARCHAR(100) NOT NULL,
+    prenom VARCHAR(100) NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    mot_de_passe VARCHAR(255) NOT NULL,
+    telephone VARCHAR(30) DEFAULT NULL,
+    date_creation DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB;
+
+CREATE TABLE contacts (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    nom VARCHAR(100) NOT NULL,
+    prenom VARCHAR(100) NOT NULL,
+    telephone VARCHAR(30) DEFAULT NULL,
+    email VARCHAR(255) DEFAULT NULL,
+    utilisateur_id INT UNSIGNED NOT NULL,
+    date_creation DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_contacts_utilisateurs
+        FOREIGN KEY (utilisateur_id)
+        REFERENCES utilisateurs(id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+) ENGINE=InnoDB;
+
